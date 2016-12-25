@@ -5,19 +5,16 @@ const styles = {
     textarea: {
         width: '500px',
         height: '200px'
+    },
+    submit: {
+        marginLeft: '20px'
     }
 }
 
-const defaultText = 
-`
-    POST MESSAGE 
-    TO GROUPS
-`
-
-const Poster = ({postToWall}) => (
+const Poster = ({postToWall, message, setMessage}) => (
     <div>
-        <textarea style={styles.textarea} value={defaultText} />
-        <RaisedButton label="發送" primary={true} onClick={postToWall}/>
+        <textarea style={styles.textarea} value={message} onChange={setMessage} />
+        <RaisedButton style={styles.submit} label="發送" primary={true} onClick={postToWall}/>
     </div>
 )
 

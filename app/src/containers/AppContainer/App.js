@@ -5,32 +5,90 @@ import Login from './components/Login';
 import Poster from './components/Poster';
 import GroupList from './components/GroupList';
 
-class App extends Component {
+const styles = {
+    poster: {
+        width: '50%',
+        float: 'left'
+    },
+    groupList: {
+        width: '50%',
+        float: 'left'
+    }
+}
 
+class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isLogin: false,
             appId: setting.appId,
-            groups: setting.groups
+            groups: [],
+            message: ''
         }
     }
 
-    postToWall = () => {
-        // this.state.groups.filter(x=>x.checked).map(obj => console.log(obj))
-        const message = 
-        `
-            活動發佈訊息
-            有換行嗎
-        `;
+    render() {
+        const { isLogin, appId, groups, message } = this.state;
 
-        FB.api('/906048196159262/feed', 'post', { message }, function(response) {
-            console.log(response);
-            if (!response || response.error) {
-                alert('Error occured');
-            } else {
-                alert('Post ID: ' + response.id);
-            }
-        });
+        return (
+            <div>
+                {!isLogin
+                    ? <Login appId={appId} fbLogin={this.fbLogin} />
+                    : <div>
+                        <div style={styles.poster}>
+                            <Poster postToWall={this.postToWall} message={message} setMessage={this.setMessage} />
+                        </div>
+                        <div style={styles.groupList}>
+                            <GroupList groups={groups} handleChecked={this.handleChecked} />
+                        </div>
+                    </div>}
+            </div>
+        )
+    }
+
+    fbLogin = (response) => {
+        const that = this;
+        FB.api('/me/groups', 'get', function(response) {
+            const groups = response.data.reverse().map(obj => {
+                return {
+                    name: obj.name,
+                    groupId: obj.id,
+                    checked: false,
+                    postId: ''
+                }
+            })
+            that.setState({
+                isLogin: true,
+                groups
+            })
+        }); 
+    }
+
+    postToWall = () => {
+        const { groups, message } = this.state;
+
+        groups.map((obj, idx) => {
+            if (!obj.checked) return;
+
+            const that = this;
+            FB.api(`/${obj.groupId}/feed`, 'post', { message }, function(response) {
+                if (!response || response.error) {
+                    alert('Error occured');
+                } else {
+                    const { groups } = that.state;
+                    that.setState({
+                        groups: [
+                            ...groups.slice(0, idx),
+                            {
+                                ...groups[idx], 
+                                postId: response.id
+                            },
+                            ...groups.slice(idx + 1)
+                        ]
+                    })
+                }
+            });     
+        })    
     }
 
     handleChecked = (index) => {
@@ -48,16 +106,10 @@ class App extends Component {
         })
     }
 
-    render() {
-        const { appId, groups } = this.state;
-
-        return (
-            <div>
-                <Login appId={appId} />
-                <Poster postToWall={this.postToWall} />
-                <GroupList groups={groups} handleChecked={this.handleChecked} />
-            </div>
-        )
+    setMessage = (e) => {
+        this.setState({
+            message: e.target.value
+        })
     }
 }
 
