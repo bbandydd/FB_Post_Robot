@@ -9,7 +9,7 @@ const GroupList = ({groups, handleChecked}) => (
             <ListItem
                 key={`group_${idx}`}
                 leftCheckbox={<Checkbox checked={obj.checked} onCheck={() => handleChecked(idx)} />}
-                primaryText={obj.name}
+                primaryText={<a target="_blank" href={`https://www.facebook.com/groups/${obj.groupId}`}>{obj.name}</a>}
             />
         ))}    
     </List>

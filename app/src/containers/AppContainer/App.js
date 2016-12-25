@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import * as setting from '../setting';
+import * as setting from '../../setting';
 
-import Login from './Login';
-import Poster from './Poster';
-import GroupList from './GroupList';
+import Login from './components/Login';
+import Poster from './components/Poster';
+import GroupList from './components/GroupList';
 
 class App extends Component {
 
@@ -16,21 +16,21 @@ class App extends Component {
     }
 
     postToWall = () => {
-        this.state.groups.filter(x=>x.checked).map(obj => console.log(obj))
-        // const message = 
-        // `
-        //     活動發佈訊息
-        //     有換行嗎
-        // `;
+        // this.state.groups.filter(x=>x.checked).map(obj => console.log(obj))
+        const message = 
+        `
+            活動發佈訊息
+            有換行嗎
+        `;
 
-        // FB.api('/me/feed', 'post', { message }, function(response) {
-        //     console.log(response);
-        //     if (!response || response.error) {
-        //         alert('Error occured');
-        //     } else {
-        //         alert('Post ID: ' + response.id);
-        //     }
-        // });
+        FB.api('/906048196159262/feed', 'post', { message }, function(response) {
+            console.log(response);
+            if (!response || response.error) {
+                alert('Error occured');
+            } else {
+                alert('Post ID: ' + response.id);
+            }
+        });
     }
 
     handleChecked = (index) => {
